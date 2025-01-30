@@ -1,4 +1,7 @@
 package org.example.utils
 
-class Menu {
+object Menu {
+    fun start(){
+
+    }
 }
