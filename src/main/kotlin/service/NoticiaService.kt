@@ -11,18 +11,18 @@ import org.example.utils.LogWriter
 class NoticiaService {
 
     private val database = DatabaseConnector.getDatabase()
-    private val collection = database.getCollection("collNoticias")
+    private val collection = database.getCollection("collNoticias", Noticia::class.java)
 
 
     fun createNoticia(noticia: Noticia): Noticia? {
         try{
-            val filtroPorId = Filters.eq("id", noticia)
+            val filtroPorId = Filters.eq("_id", noticia)
             val noticiaDoc = collection.find(filtroPorId).firstOrNull()
             if(noticiaDoc != null){
                 throw Exception("Noticia existente.")
             }
             else {
-                collection.insertOne(Document(mapOf("_id" to noticia._id, "titulo" to noticia.titulo, "contenido" to noticia.contenido, "autor" to noticia.autor,"tags" to noticia.tags, "fechaYhora" to noticia.fechaYhora)))
+                collection.insertOne(noticia)
                 return noticia
             }
         }
@@ -38,10 +38,10 @@ class NoticiaService {
 
     fun getNoticia(id: String): Noticia? {
         try {
-            val filtroPorId = Filters.eq("id", id)
-            val noticiaDoc = collection.find(filtroPorId).firstOrNull()
-            if(noticiaDoc != null){
-                return Noticia(noticiaDoc.getString("id"), noticiaDoc.getString("titulo"),noticiaDoc.getString("contenido"), noticiaDoc.get("autor", Usuario::class.java), noticiaDoc.getList("tags", String::class.java), noticiaDoc.getDate("fechaYhora"))
+            val filtroPorId = Filters.eq("_id", id)
+            val noticia = collection.find(filtroPorId).firstOrNull()
+            if(noticia != null){
+                return noticia
             }
             else{
                 return null
@@ -56,8 +56,8 @@ class NoticiaService {
     fun getNoticias(): List<Noticia>? {
         try {
             val noticias = mutableListOf<Noticia>()
-            collection.find().forEach { noticiaDoc ->
-                noticias.add(Noticia(noticiaDoc.getString("id"), noticiaDoc.getString("titulo"),noticiaDoc.getString("contenido"), noticiaDoc.get("autor", Usuario::class.java), noticiaDoc.getList("tags", String::class.java), noticiaDoc.getDate("fechaYhora")))
+            collection.find().forEach { noticia ->
+                noticias.add(noticia)
             }
             return noticias
         }
@@ -68,34 +68,11 @@ class NoticiaService {
 
     }
 
-
     fun getNoticiasPorAutor(autorID: String): List<Noticia>? {
         val listaNoticias = mutableListOf<Noticia>()
-        collection.find(Filters.eq("autor.id", autorID)).forEach { noticiaDoc ->
+        collection.find(Filters.eq("autor._id", autorID)).forEach { noticia ->
 
-            val autorDoc = noticiaDoc.get("autor", Document::class.java)
-
-            val direccionDoc = autorDoc.get("direccion",Document::class.java)
-            val direccion = Direccion(
-                direccionDoc.getString("calle"),
-                direccionDoc.getInteger("numero"),
-                direccionDoc.getString("puerta"),
-                direccionDoc.getInteger("codigoPostal"),
-                direccionDoc.getString("ciudad"),
-            )
-
-
-            val autor = Usuario(
-                autorDoc.getString("id"),
-                autorDoc.getString("nombre"),
-                autorDoc.getString("nick"),
-                autorDoc.getString("email"),
-                autorDoc.getBoolean("banned"),
-                direccion,
-                autorDoc.getList("tlfs", String::class.java),
-            )
-
-            listaNoticias.add(Noticia(noticiaDoc.getString("id"), noticiaDoc.getString("titulo"),noticiaDoc.getString("contenido"), autor, noticiaDoc.getList("tags", String::class.java), noticiaDoc.getDate("fechaYhora")))
+            listaNoticias.add(noticia)
         }
         if(listaNoticias.isNotEmpty()) {
             return listaNoticias
@@ -105,11 +82,10 @@ class NoticiaService {
         }
     }
 
-
     fun getNoticiasPorTags(tags: List<String>): List<Noticia>? {
         val listaNoticias = mutableListOf<Noticia>()
         collection.find().forEach { noticiaDoc ->
-            val noticiaActual = Noticia(noticiaDoc.getString("id"), noticiaDoc.getString("titulo"),noticiaDoc.getString("contenido"), noticiaDoc.get("autor", Usuario::class.java), noticiaDoc.getList("tags", String::class.java), noticiaDoc.getDate("fechaYhora"))
+            val noticiaActual = noticiaDoc
             if (noticiaActual.tags.isNotEmpty()) {
                 noticiaActual.tags.forEach {
                     for (tag in tags) {
@@ -124,6 +100,17 @@ class NoticiaService {
             return listaNoticias
         }
         else{
+            return null
+        }
+    }
+
+    fun get10UltimasNoticias(): List<Noticia>? {
+        val listaNoticias = mutableListOf<Noticia>()
+        collection.find().limit(10).forEach { noticia -> listaNoticias.add(noticia) }
+        if(listaNoticias.isNotEmpty()) {
+            return listaNoticias
+        }
+        else {
             return null
         }
     }

@@ -19,7 +19,7 @@ data class Noticia(
     }
 
     override fun toString(): String {
-        return "Noticia escrita por ${autor.nick} el $fechaYhora."
+        return "Noticia ($titulo) escrita por ${autor.nick} el $fechaYhora."
     }
 
 }

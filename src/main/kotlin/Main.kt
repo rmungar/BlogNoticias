@@ -3,6 +3,7 @@ package org.example
 import org.example.controller.ComentarioController
 import org.example.controller.NoticiaController
 import org.example.controller.UsuarioController
+import org.example.model.Comentario
 import org.example.model.Direccion
 import org.example.model.Noticia
 import org.example.model.Usuario
@@ -12,12 +13,12 @@ import java.util.*
 
 fun main() {
 
-    val ComentarioController = ComentarioController()
-
     testRegistrarUsuarios()
     testPublicarNoticias()
     testListarNoticiasDeUnUsuario()
-
+    testObtenerComentariosDeUnaNoticia()
+    testBuscarNoticiasPorTags()
+    listar10UltimasNoticias()
 }
 
 
@@ -227,9 +228,93 @@ fun testListarNoticiasDeUnUsuario() {
         fechaYhora = Date.from(Instant.now()),
     )
 
+    // PUBLICAR 3 NOTICIAS VÁLIDAS PARA LA PRUEBA
     NoticiaController.createNoticia(noticia1)
     NoticiaController.createNoticia(noticia2)
     NoticiaController.createNoticia(noticia3)
 
+    // OBTENER LAS NOTICIAS DE UN USUARIO
     NoticiaController.getNoticiaPorAutor(usuario1._id)
+}
+
+fun testObtenerComentariosDeUnaNoticia(){
+
+    val ComentarioController = ComentarioController()
+
+    // USUARIOS DE PRUEBA
+    val direccionUsuario1 = Direccion("Buenas tardes",9, "C", 11100, "San Fernando")
+    val usuario1 = Usuario(
+        _id = null,
+        nombre = "Pepe",
+        nick = "Ppe",
+        direccion = direccionUsuario1,
+        banned = false,
+        email = "pepe@example.com",
+        tlfs = listOf("000000000")
+    )
+
+    val direccionUsuario2 = Direccion("Buenas noches",1,"Z",11200, "San Fernando")
+    val usuario2 = Usuario(
+        _id = null,
+        nombre = "Pepa",
+        nick = "Ppa",
+        direccion = direccionUsuario2,
+        banned = true,
+        email = "pepa@example.com",
+        tlfs = listOf("111111111")
+    )
+
+    // NOTICIA DE PRUEBA
+    val noticia1 = Noticia(
+        _id = null,
+        titulo = "Pepe lo pierde todo.",
+        contenido = "Pepe, el vecino del barrio lo pierde todo en el casino.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    // COMENTARIOS DE PRUEBA
+    // COMENTARIO DE UNA PERSONA REGISTRADA Y NO BANNEADA (Revisar log.txt)
+    val comentario1 = Comentario(
+        _id = null,
+        contenido = "No me lo puedo creer.",
+        noticia = noticia1,
+        usuario = usuario1,
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    // COMENTARIO DE UNA PERSONA REGISTRADA Y BANNEADA (Revisar exceptionLog.txt)
+    val comentario2 = Comentario(
+        _id = null,
+        contenido = "Se lo merece.",
+        noticia = noticia1,
+        usuario = usuario2,
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+
+    // COMENTARIO DE UNA PERSONA REGISTRADA Y NO BANNEADA (Revisar log.txt)
+    ComentarioController.createComentario(comentario1)
+
+    // COMENTARIO DE UNA PERSONA REGISTRADA Y BANNEADA (Revisar exceptionLog.txt)
+    ComentarioController.createComentario(comentario2)
+
+    ComentarioController.getComentarioDeNoticia(noticia1._id)
+
+}
+
+fun testBuscarNoticiasPorTags(){
+
+    val NoticiaController = NoticiaController()
+
+    // LISTA DE TAGS PARA BUSCAR NOTICIAS
+    val tags = listOf("Barrio", "Nadie", "Nada")
+
+    NoticiaController.getNoticiaPorTags(tags)
+}
+
+fun listar10UltimasNoticias(){
+    val NoticiaController = NoticiaController()
+    NoticiaController.get10UltimasNoticias()
 }

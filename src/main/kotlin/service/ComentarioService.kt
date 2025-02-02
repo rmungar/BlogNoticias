@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters
 import org.bson.Document
 import org.example.controller.NoticiaController
 import org.example.model.Comentario
+import org.example.model.Direccion
 import org.example.model.Noticia
 import org.example.model.Usuario
 import org.example.utils.DatabaseConnector
@@ -12,12 +13,12 @@ import org.example.utils.LogWriter
 class ComentarioService {
 
     private val database = DatabaseConnector.getDatabase()
-    private val collection = database.getCollection("collComentarios")
+    private val collection = database.getCollection("collComentarios", Comentario::class.java)
 
 
     fun createComentario(comentario: Comentario): Comentario? {
         try {
-            collection.insertOne(Document(mapOf("_id" to comentario._id,"contenido" to comentario.contenido, "noticia" to comentario.noticia, "usuario" to comentario.usuario, "fechaYhora" to comentario.fechaYhora)))
+            collection.insertOne(comentario)
             return comentario
         }
         catch (e: Exception) {
@@ -37,8 +38,8 @@ class ComentarioService {
     fun getComentarioDeNoticia(noticia: Noticia): List<Comentario>? {
         val listaComentario = mutableListOf<Comentario>()
         collection.find().forEach { comentario ->
-            if (comentario.get("noticia", Noticia::class.java) == noticia) {
-                listaComentario.add(Comentario(null, comentario.getString("contenido"), comentario.get("noticia", Noticia::class.java), comentario.get("usuario", Usuario::class.java), comentario.getDate("fechaYhora")))
+            if (comentario.noticia == noticia) {
+                listaComentario.add(comentario)
             }
         }
         if (listaComentario.isNotEmpty()) {

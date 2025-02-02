@@ -72,7 +72,6 @@ class NoticiaController {
         }
     }
 
-
     fun getNoticiaPorAutor(autorID: String?): List<Noticia>? {
         if (!autorID.isNullOrEmpty() && autorID.isNotBlank()) {
             val result = noticiaService.getNoticiasPorAutor(autorID)
@@ -113,12 +112,21 @@ class NoticiaController {
         }
     }
 
+    fun get10UltimasNoticias(): List<Noticia>?{
+        val result = noticiaService.get10UltimasNoticias()
+        if (result != null){
+            LogWriter.writeLog("Obtención de las 10 últimas noticias exitosa.\n")
+            result.forEach { LogWriter.writeLog("$it\n") }
+            return result
+        }
+        else{
+            return null
+        }
+    }
 
     fun deleteNoticia(){
         TODO("No se requería en el ejercicio")
     }
-
-
 
     private fun comprobarDatosNoticias(noticia: Noticia): Boolean{
         if (noticia._id.isNullOrBlank()){

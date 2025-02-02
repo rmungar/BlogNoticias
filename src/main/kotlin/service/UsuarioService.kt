@@ -10,7 +10,7 @@ import org.example.utils.LogWriter
 class UsuarioService {
 
     private val database = DatabaseConnector.getDatabase()
-    private val collection = database.getCollection("collUsuarios")
+    private val collection = database.getCollection("collUsuarios", Usuario::class.java)
 
     fun createUsuario(usuario: Usuario): Usuario? {
         try {
@@ -28,7 +28,7 @@ class UsuarioService {
 
             }
             else {
-                collection.insertOne(Document(mapOf("_id" to usuario._id, "nombre"  to usuario.nombre, "nick" to usuario.nick, "email" to usuario.email, "banned" to usuario.banned, "direccion" to usuario.direccion, "tlfs" to usuario.tlfs)))
+                collection.insertOne(usuario)
                 return usuario
             }
         } catch (e:Exception) {
@@ -43,28 +43,10 @@ class UsuarioService {
 
     fun getUsuario(id: String): Usuario? {
         try {
-            val filtroPorID = Filters.eq("id", id)
+            val filtroPorID = Filters.eq("_id", id)
             val usuarioDoc = collection.find(filtroPorID).firstOrNull()
             if (usuarioDoc != null) {
-
-                val direccionDoc = usuarioDoc.get("direccion",Document::class.java)
-                val direccion = Direccion(
-                    direccionDoc.getString("calle"),
-                    direccionDoc.getInteger("numero"),
-                    direccionDoc.getString("puerta"),
-                    direccionDoc.getInteger("codigoPostal"),
-                    direccionDoc.getString("ciudad"),
-                )
-
-                return Usuario(
-                    usuarioDoc.getString("id"),
-                    usuarioDoc.getString("nombre"),
-                    usuarioDoc.getString("nick"),
-                    usuarioDoc.getString("email"),
-                    usuarioDoc.getBoolean("banned"),
-                    direccion,
-                    usuarioDoc.getList("tlfs", String::class.java)
-                )
+                return usuarioDoc
             }
             else{
                 return null

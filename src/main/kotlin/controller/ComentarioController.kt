@@ -20,7 +20,7 @@ class ComentarioController {
                 comprobarDatosComentario(comentario)
                 val result = comentarioService.createComentario(comentario)
                 if (result != null) {
-                    LogWriter.writeLog("Creaciñón de comentario exitosa.\n $result")
+                    LogWriter.writeLog("Creación de comentario exitosa.\n$result")
                     return result
                 }
                 else {
