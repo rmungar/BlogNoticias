@@ -14,13 +14,13 @@ class UsuarioService {
 
     fun createUsuario(usuario: Usuario): Usuario? {
         try {
-            val filtroPorID = Filters.eq("id", usuario.id.toString())
+            val filtroPorID = Filters.eq("id", usuario._id.toString())
             val filtroPorNick = Filters.eq("nick", usuario.nick)
             val usuarioExistente = collection.find(filtroPorID).firstOrNull()
             val usuarioEmailExistente = collection.find(filtroPorNick).firstOrNull()
             if (usuarioExistente != null || usuarioEmailExistente != null) {
                 if (usuarioEmailExistente != null) {
-                    throw Exception("Ya existe un usuario con ese nick.")
+                    throw Exception("Ya existe un usuario con ese nickS.")
                 }
                 else {
                     throw Exception("Ya existe un usuario con ese id.")
@@ -28,7 +28,7 @@ class UsuarioService {
 
             }
             else {
-                collection.insertOne(Document(mapOf("id" to usuario.id, "nombre"  to usuario.nombre, "nick" to usuario.nick, "email" to usuario.email, "banned" to usuario.banned, "direccion" to usuario.direccion, "tlfs" to usuario.tlfs)))
+                collection.insertOne(Document(mapOf("_id" to usuario._id, "nombre"  to usuario.nombre, "nick" to usuario.nick, "email" to usuario.email, "banned" to usuario.banned, "direccion" to usuario.direccion, "tlfs" to usuario.tlfs)))
                 return usuario
             }
         } catch (e:Exception) {
@@ -46,7 +46,25 @@ class UsuarioService {
             val filtroPorID = Filters.eq("id", id)
             val usuarioDoc = collection.find(filtroPorID).firstOrNull()
             if (usuarioDoc != null) {
-                return Usuario(usuarioDoc.getString("id"), usuarioDoc.getString("nombre"),usuarioDoc.getString("nick"),usuarioDoc.getString("email"),usuarioDoc.getBoolean("banned"), usuarioDoc.get("direccion", Direccion::class.java), usuarioDoc.getList("tlfs", String::class.java))
+
+                val direccionDoc = usuarioDoc.get("direccion",Document::class.java)
+                val direccion = Direccion(
+                    direccionDoc.getString("calle"),
+                    direccionDoc.getInteger("numero"),
+                    direccionDoc.getString("puerta"),
+                    direccionDoc.getInteger("codigoPostal"),
+                    direccionDoc.getString("ciudad"),
+                )
+
+                return Usuario(
+                    usuarioDoc.getString("id"),
+                    usuarioDoc.getString("nombre"),
+                    usuarioDoc.getString("nick"),
+                    usuarioDoc.getString("email"),
+                    usuarioDoc.getBoolean("banned"),
+                    direccion,
+                    usuarioDoc.getList("tlfs", String::class.java)
+                )
             }
             else{
                 return null

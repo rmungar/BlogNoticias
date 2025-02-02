@@ -4,16 +4,19 @@ import org.example.controller.ComentarioController
 import org.example.controller.NoticiaController
 import org.example.controller.UsuarioController
 import org.example.model.Direccion
+import org.example.model.Noticia
 import org.example.model.Usuario
+import java.time.Instant
+import java.util.*
 
 
 fun main() {
 
     val ComentarioController = ComentarioController()
 
-    //testRegistrarUsuarios()
-
-
+    testRegistrarUsuarios()
+    testPublicarNoticias()
+    testListarNoticiasDeUnUsuario()
 
 }
 
@@ -26,7 +29,7 @@ fun testRegistrarUsuarios(){
 
     val direccionUsuario1 = Direccion("Buenas tardes",9, "C", 11100, "San Fernando")
     val usuario1 = Usuario(
-        id = null,
+        _id = null,
         nombre = "Pepe",
         nick = "Ppe",
         direccion = direccionUsuario1,
@@ -37,7 +40,7 @@ fun testRegistrarUsuarios(){
 
     val direccionUsuario2 = Direccion("Buenas noches",1,"Z",11200, "San Fernando")
     val usuario2 = Usuario(
-        id = null,
+        _id = null,
         nombre = "Pepa",
         nick = "Ppa",
         direccion = direccionUsuario2,
@@ -48,7 +51,7 @@ fun testRegistrarUsuarios(){
 
     val direccionUsuario3 = Direccion("Buenas tardes",5,"H",11600, "San Fernando")
     val usuario3 = Usuario(
-        id = null,
+        _id = null,
         nombre = "",
         nick = "Ppi",
         direccion = direccionUsuario3,
@@ -59,7 +62,7 @@ fun testRegistrarUsuarios(){
 
     val direccionUsuario4 = Direccion("Buenas Mañanas",5,"J",11900, "San Fernando")
     val usuario4 = Usuario(
-        id = null,
+        _id = null,
         nombre = "Pepe",
         nick = "Ppe",
         direccion = direccionUsuario4,
@@ -84,7 +87,111 @@ fun testPublicarNoticias() {
 
     val direccionUsuario1 = Direccion("Buenas tardes",9, "C", 11100, "San Fernando")
     val usuario1 = Usuario(
-        id = null,
+        _id = null,
+        nombre = "Pepe",
+        nick = "Ppe",
+        direccion = direccionUsuario1,
+        banned = false,
+        email = "pepe@example.com",
+        tlfs = listOf("000000000")
+    )
+
+    val direccionUsuario2 = Direccion("Buenas noches",1,"Z",11200, "San Fernando")
+    val usuario2 = Usuario(
+        _id = null,
+        nombre = "Pepa",
+        nick = "Ppa",
+        direccion = direccionUsuario2,
+        banned = true,
+        email = "pepa@example.com",
+        tlfs = listOf("111111111")
+    )
+
+    val direccionUsuarioNoExistente = Direccion("Ningun Lugar",0, "A", 0, "En ningun lado")
+    val usuarioNoExistente = Usuario(
+        _id = null,
+        nombre = "No existo",
+        nick = "Inexistente",
+        direccion = direccionUsuarioNoExistente,
+        banned = false,
+        email = "none@example.com",
+        tlfs = listOf("000000000")
+    )
+
+    // NOTICIA CON FORMATO CORRECTO Y USUARIO QUE EXITE --> SE PUBLICA
+    val noticia1 = Noticia(
+        _id = null,
+        titulo = "Pepe se hace millonario.",
+        contenido = "Pepe, el vecino del barrio se hace millonario tras 30 años de jugar a la Bonoloto.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    // NOTICIAS DE UN USUARIO QUE EXISTE PERO TIENEN FALLOS EN EL FORMATO --> NO SE PUBLICAN
+    val noticia2 = Noticia(
+        _id = null,
+        titulo = "",
+        contenido = "Pepe, el vecino del barrio se hace millonario tras 30 años de jugar a la Bonoloto.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    val noticia3 = Noticia(
+        _id = null,
+        titulo = "Pepe se hace millonario.",
+        contenido = "",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    // NOTICIA DE UN USUARIO BANNEADO --> NO SE PUBLICAN
+    val noticia4 = Noticia(
+        _id = null,
+        titulo = "Pepe se hace millonario.",
+        contenido = "Pepe, el vecino del barrio se hace millonario tras 30 años de jugar a la Bonoloto.",
+        autor = usuario2,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    // NOTICIA DE UN USUARIO QUE NO EXISTE --> NO SE PUBLICA
+    val noticiaInexistente = Noticia(
+        _id = null,
+        titulo = "Nadie desaparece",
+        contenido = "No pasó nada.",
+        autor = usuarioNoExistente,
+        tags = listOf("Existencial", "Nadie", "Nada"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+
+    // PUBLICAR UNA NOTICIA CON UN USUARIO REGISTRADO (Revisar log.txt)
+    NoticiaController.createNoticia(noticia1)
+
+    // PULICAR NOTICIAS CON FALLOS EN EL FORMATO (Revisar exceptionLog.txt)
+    NoticiaController.createNoticia(noticia2)
+    NoticiaController.createNoticia(noticia3)
+
+    // PUBLICAR UNA NOTICIA DE UN USUARIO BANNEADO (Revisar exceptionLog.txt)
+    NoticiaController.createNoticia(noticia4)
+
+
+    // PUBLICAR UNA NOTICIA CON UN USUARIO NO REGISTRADO (Revisar exceptionLog.txt)
+    NoticiaController.createNoticia(noticiaInexistente)
+
+
+}
+
+fun testListarNoticiasDeUnUsuario() {
+
+    val NoticiaController = NoticiaController()
+
+    val direccionUsuario1 = Direccion("Buenas tardes",9, "C", 11100, "San Fernando")
+    val usuario1 = Usuario(
+        _id = null,
         nombre = "Pepe",
         nick = "Ppe",
         direccion = direccionUsuario1,
@@ -94,6 +201,35 @@ fun testPublicarNoticias() {
     )
 
 
+    // NOTICIAS CON FORMATO CORRECTO Y USUARIO QUE EXITE --> SE PUBLICAN
+    val noticia1 = Noticia(
+        _id = null,
+        titulo = "Pepe se hace billonario.",
+        contenido = "Pepe, el vecino del barrio se hace billonario.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+    val noticia2 = Noticia(
+        _id = null,
+        titulo = "Pepe se hace trillonario.",
+        contenido = "Pepe, el vecino del barrio se hace trillonario.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+    val noticia3 = Noticia(
+        _id = null,
+        titulo = "Pepe lo pierde todo.",
+        contenido = "Pepe, el vecino del barrio lo pierde todo en el casino.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
 
+    NoticiaController.createNoticia(noticia1)
+    NoticiaController.createNoticia(noticia2)
+    NoticiaController.createNoticia(noticia3)
 
+    NoticiaController.getNoticiaPorAutor(usuario1._id)
 }

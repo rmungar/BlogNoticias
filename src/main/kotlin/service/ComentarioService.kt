@@ -17,7 +17,7 @@ class ComentarioService {
 
     fun createComentario(comentario: Comentario): Comentario? {
         try {
-            collection.insertOne(Document(mapOf("contenido" to comentario.contenido, "noticia" to comentario.noticia, "usuario" to comentario.usuario, "fechaYhora" to comentario.fechaYhora)))
+            collection.insertOne(Document(mapOf("_id" to comentario._id,"contenido" to comentario.contenido, "noticia" to comentario.noticia, "usuario" to comentario.usuario, "fechaYhora" to comentario.fechaYhora)))
             return comentario
         }
         catch (e: Exception) {
@@ -38,7 +38,7 @@ class ComentarioService {
         val listaComentario = mutableListOf<Comentario>()
         collection.find().forEach { comentario ->
             if (comentario.get("noticia", Noticia::class.java) == noticia) {
-                listaComentario.add(Comentario(comentario.getString("contenido"), comentario.get("noticia", Noticia::class.java), comentario.get("usuario", Usuario::class.java), comentario.getDate("fechaYhora")))
+                listaComentario.add(Comentario(null, comentario.getString("contenido"), comentario.get("noticia", Noticia::class.java), comentario.get("usuario", Usuario::class.java), comentario.getDate("fechaYhora")))
             }
         }
         if (listaComentario.isNotEmpty()) {

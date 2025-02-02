@@ -64,7 +64,7 @@ class UsuarioController {
 
 
     private fun comprobarDatosUsuario(usuario: Usuario): Boolean{
-        if (usuario.id.isNullOrBlank()){
+        if (usuario._id.isNullOrBlank()){
             throw Exception("El id de usuario no puede ser nulo o estar vacío.")
         }
         if (usuario.nombre.isBlank()){

@@ -52,7 +52,8 @@ class ComentarioController {
             if (noticia != null){
                 val result = comentarioService.getComentarioDeNoticia(noticia)
                 if (result != null) {
-                    LogWriter.writeLog("Obtención de comentarios de una noticia exitoso.\n ${result.forEach { "$it\n" }}")
+                    LogWriter.writeLog("Obtención de comentarios de una noticia exitoso.\n")
+                    result.forEach { LogWriter.writeLog("$it\n") }
                     return result
                 }
                 else{
@@ -84,10 +85,10 @@ class ComentarioController {
         if (comentario.fechaYhora.after(Date.from(Instant.now()))){
             throw Exception("Fecha no válida para el comentario.")
         }
-        if (noticiaService.getNoticia(comentario.noticia.id!!) == null){
+        if (noticiaService.getNoticia(comentario.noticia._id!!) == null){
             throw Exception("No se puede comentar una noticia inexistente.")
         }
-        if (usuarioService.getUsuario(comentario.usuario.id!!) == null){
+        if (usuarioService.getUsuario(comentario.usuario._id!!) == null){
             throw Exception("Usuario no puede ser nulo.")
         }
         else if (comentario.usuario.banned){

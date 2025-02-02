@@ -22,7 +22,7 @@ class NoticiaController {
                     return result
                 }
                 else{
-                    LogWriter.writeLog("La noticia ya existe.")
+                    LogWriter.writeLog("La noticia ya existe.\n$noticia")
                     return null
                 }
             }
@@ -44,7 +44,8 @@ class NoticiaController {
     fun getNoticias(): List<Noticia>?{
         val result = noticiaService.getNoticias()
         if (result != null){
-            LogWriter.writeLog("Obtencion de noticias exitosa.\n${result.forEach { "$it\n" }}")
+            LogWriter.writeLog("Obtencion de noticias exitosa.\n")
+            result.forEach { LogWriter.writeLog("$it\n") }
             return result
         }
         else {
@@ -76,7 +77,8 @@ class NoticiaController {
         if (!autorID.isNullOrEmpty() && autorID.isNotBlank()) {
             val result = noticiaService.getNoticiasPorAutor(autorID)
             if (result != null ) {
-                LogWriter.writeLog("Obtención de noticias por autor exitosa.\n${result.forEach { "$it\n" }}")
+                LogWriter.writeLog("Obtención de noticias por autor exitosa.\n")
+                result.forEach { LogWriter.writeLog("$it\n") }
                 return result
             }
             else {
@@ -90,14 +92,36 @@ class NoticiaController {
         }
     }
 
+    fun getNoticiaPorTags(tags: List<String>?): List<Noticia>? {
+        if (!tags.isNullOrEmpty()) {
+            val result = noticiaService.getNoticiasPorTags(tags)
+            if (result != null) {
+                LogWriter.writeLog("Obtencion de noticias por tags exitosa.\n")
+                result.forEach {
+                    LogWriter.writeLog("$it\n")
+                }
+                return result
+            }
+            else {
+                LogWriter.writeLog("No se encontraron noticias con los tags: $tags.")
+                return null
+            }
+        }
+        else {
+            LogWriter.writeLog("La lista de tags no puede estar vacía.")
+            return null
+        }
+    }
+
 
     fun deleteNoticia(){
         TODO("No se requería en el ejercicio")
     }
 
 
+
     private fun comprobarDatosNoticias(noticia: Noticia): Boolean{
-        if (noticia.id.isNullOrBlank()){
+        if (noticia._id.isNullOrBlank()){
             throw Exception("El id de la noticia no puede ser nulo o estar vacío.")
         }
         if (noticia.titulo.isBlank()){
@@ -114,7 +138,7 @@ class NoticiaController {
                 throw Exception("No existen los tags vacios")
             }
         }
-        if (usuarioService.getUsuario(noticia.autor.id!!) == null){
+        if (usuarioService.getUsuario(noticia.autor._id!!) == null){
             throw Exception("Las noticias solo las pueden publicar usuarios registrados.")
         }
         else if (noticia.autor.banned){
