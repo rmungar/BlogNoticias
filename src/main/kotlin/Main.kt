@@ -365,6 +365,7 @@ fun testBuscarNoticiasPorTags(){
 }
 
 fun listar10UltimasNoticias(){
+
     val NoticiaController = NoticiaController()
 
     NoticiaController.get10UltimasNoticias()
