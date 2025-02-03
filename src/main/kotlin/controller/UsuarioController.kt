@@ -44,11 +44,11 @@ class UsuarioController {
         if (id != null) {
             val result = usuarioService.getUsuario(id)
             if (result != null) {
-                LogWriter.writeLog("Obtencion de usuario exitosa.\n$result")
+                LogWriter.writeLog("Obtención de usuario exitosa.\n$result")
                 return result
             }
             else {
-                LogWriter.writeLog("Ningun usuario con el id: $id.")
+                LogWriter.writeLog("Ningún usuario con el id: $id.")
                 return null
             }
         }

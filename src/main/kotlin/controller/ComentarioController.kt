@@ -24,6 +24,7 @@ class ComentarioController {
                     return result
                 }
                 else {
+                    LogWriter.writeLog("No se pudo crear el comentario.\n$result")
                     return null
                 }
             }
@@ -33,7 +34,7 @@ class ComentarioController {
             }
         }
         catch (e: Exception) {
-            LogWriter.writeLog("El comentario no puede ser nulo.")
+            LogWriter.writeExceptionLog(e)
             return null
         }
     }
@@ -92,7 +93,7 @@ class ComentarioController {
             throw Exception("Usuario no puede ser nulo.")
         }
         else if (comentario.usuario.banned){
-            throw Exception("Un usuario banneado no puede escribir comentarios.")
+            throw Exception("Un usuario baneado no puede escribir comentarios.")
         }
     }
 

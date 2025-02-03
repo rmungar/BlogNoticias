@@ -44,7 +44,7 @@ class NoticiaController {
     fun getNoticias(): List<Noticia>?{
         val result = noticiaService.getNoticias()
         if (result != null){
-            LogWriter.writeLog("Obtencion de noticias exitosa.\n")
+            LogWriter.writeLog("Obtención de noticias exitosa.\n")
             result.forEach { LogWriter.writeLog("$it\n") }
             return result
         }
@@ -76,7 +76,7 @@ class NoticiaController {
         if (!autorID.isNullOrEmpty() && autorID.isNotBlank()) {
             val result = noticiaService.getNoticiasPorAutor(autorID)
             if (result != null ) {
-                LogWriter.writeLog("Obtención de noticias por autor exitosa.\n")
+                LogWriter.writeLog("Obtención de noticias por autor exitosa $autorID.\n")
                 result.forEach { LogWriter.writeLog("$it\n") }
                 return result
             }
@@ -95,7 +95,7 @@ class NoticiaController {
         if (!tags.isNullOrEmpty()) {
             val result = noticiaService.getNoticiasPorTags(tags)
             if (result != null) {
-                LogWriter.writeLog("Obtencion de noticias por tags exitosa.\n")
+                LogWriter.writeLog("Obtención de noticias por tags ($tags) exitosa.\n")
                 result.forEach {
                     LogWriter.writeLog("$it\n")
                 }
@@ -115,11 +115,12 @@ class NoticiaController {
     fun get10UltimasNoticias(): List<Noticia>?{
         val result = noticiaService.get10UltimasNoticias()
         if (result != null){
-            LogWriter.writeLog("Obtención de las 10 últimas noticias exitosa.\n")
+            LogWriter.writeLog("Obtención de las ${result.size} últimas noticias exitosa.\n")
             result.forEach { LogWriter.writeLog("$it\n") }
             return result
         }
         else{
+            LogWriter.writeExceptionLog(Exception("La base de datos está vacía."))
             return null
         }
     }
@@ -143,14 +144,14 @@ class NoticiaController {
         }
         for (tag in noticia.tags){
             if (tag.isBlank()){
-                throw Exception("No existen los tags vacios")
+                throw Exception("No existen los tags vacíos")
             }
         }
         if (usuarioService.getUsuario(noticia.autor._id!!) == null){
             throw Exception("Las noticias solo las pueden publicar usuarios registrados.")
         }
         else if (noticia.autor.banned){
-            throw Exception("Los usuarios banneados no pueden publicar noticias.")
+            throw Exception("Los usuarios baneados no pueden publicar noticias.")
         }
         return true
     }

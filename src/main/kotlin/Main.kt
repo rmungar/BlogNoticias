@@ -19,9 +19,8 @@ fun main() {
     testObtenerComentariosDeUnaNoticia()
     testBuscarNoticiasPorTags()
     listar10UltimasNoticias()
+
 }
-
-
 
 fun testRegistrarUsuarios(){
 
@@ -201,6 +200,27 @@ fun testListarNoticiasDeUnUsuario() {
         tlfs = listOf("000000000")
     )
 
+    val direccionUsuario2 = Direccion("Buenas noches",1,"Z",11200, "San Fernando")
+    val usuario2 = Usuario(
+        _id = null,
+        nombre = "Pepa",
+        nick = "Ppa",
+        direccion = direccionUsuario2,
+        banned = true,
+        email = "pepa@example.com",
+        tlfs = listOf("111111111")
+    )
+
+    val direccionUsuarioNoExistente = Direccion("Ningun Lugar",0, "A", 0, "En ningun lado")
+    val usuarioNoExistente = Usuario(
+        _id = null,
+        nombre = "No existo",
+        nick = "Inexistente",
+        direccion = direccionUsuarioNoExistente,
+        banned = false,
+        email = "none@example.com",
+        tlfs = listOf("000000000")
+    )
 
     // NOTICIAS CON FORMATO CORRECTO Y USUARIO QUE EXITE --> SE PUBLICAN
     val noticia1 = Noticia(
@@ -233,8 +253,10 @@ fun testListarNoticiasDeUnUsuario() {
     NoticiaController.createNoticia(noticia2)
     NoticiaController.createNoticia(noticia3)
 
-    // OBTENER LAS NOTICIAS DE UN USUARIO
+    // OBTENER LAS NOTICIAS DE LOS USUARIOS
     NoticiaController.getNoticiaPorAutor(usuario1._id)
+    NoticiaController.getNoticiaPorAutor(usuario2._id)
+    NoticiaController.getNoticiaPorAutor(usuarioNoExistente._id)
 }
 
 fun testObtenerComentariosDeUnaNoticia(){
@@ -264,11 +286,29 @@ fun testObtenerComentariosDeUnaNoticia(){
         tlfs = listOf("111111111")
     )
 
-    // NOTICIA DE PRUEBA
+    // NOTICIAS DE PRUEBA
     val noticia1 = Noticia(
         _id = null,
         titulo = "Pepe lo pierde todo.",
         contenido = "Pepe, el vecino del barrio lo pierde todo en el casino.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    val noticia2 = Noticia(
+        _id = null,
+        titulo = "Pepe se hace trillonario.",
+        contenido = "Pepe, el vecino del barrio se hace trillonario.",
+        autor = usuario1,
+        tags = listOf("Barrio", "Sorprendente", "Dinero"),
+        fechaYhora = Date.from(Instant.now()),
+    )
+
+    val noticia3 = Noticia(
+        _id = null,
+        titulo = "Pepe recupera todo.",
+        contenido = "Pepe, el vecino del barrio ha conseguido recuperar lo que perdió.",
         autor = usuario1,
         tags = listOf("Barrio", "Sorprendente", "Dinero"),
         fechaYhora = Date.from(Instant.now()),
@@ -300,7 +340,10 @@ fun testObtenerComentariosDeUnaNoticia(){
     // COMENTARIO DE UNA PERSONA REGISTRADA Y BANNEADA (Revisar exceptionLog.txt)
     ComentarioController.createComentario(comentario2)
 
+    // OBTENER LOS COMENTARIOS DE LAS NOTICIAS
     ComentarioController.getComentarioDeNoticia(noticia1._id)
+    ComentarioController.getComentarioDeNoticia(noticia2._id)
+    ComentarioController.getComentarioDeNoticia(noticia3._id)
 
 }
 
@@ -308,13 +351,25 @@ fun testBuscarNoticiasPorTags(){
 
     val NoticiaController = NoticiaController()
 
-    // LISTA DE TAGS PARA BUSCAR NOTICIAS
+    // LISTAS DE TAGS PARA BUSCAR NOTICIAS
     val tags = listOf("Barrio", "Nadie", "Nada")
+    val tags2 = emptyList<String>()
+    val tags3 = listOf("Prueba")
 
+    // TAGS QUE SI TIENEN NOTICIAS
     NoticiaController.getNoticiaPorTags(tags)
+    // TAGS QUE NO TIENEN NOTICIAS
+    NoticiaController.getNoticiaPorTags(tags2)
+    NoticiaController.getNoticiaPorTags(tags3)
+
 }
 
 fun listar10UltimasNoticias(){
     val NoticiaController = NoticiaController()
+
     NoticiaController.get10UltimasNoticias()
+
 }
+
+
+

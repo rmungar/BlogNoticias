@@ -9,7 +9,6 @@ data class Noticia(
     val titulo: String,
     val contenido: String,
     val autor: Usuario,
-
     val tags: List<String>,
     val fechaYhora: Date
 ) {

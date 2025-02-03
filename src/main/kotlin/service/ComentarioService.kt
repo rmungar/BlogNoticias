@@ -38,7 +38,7 @@ class ComentarioService {
     fun getComentarioDeNoticia(noticia: Noticia): List<Comentario>? {
         val listaComentario = mutableListOf<Comentario>()
         collection.find().forEach { comentario ->
-            if (comentario.noticia == noticia) {
+            if (comentario.noticia._id == noticia._id) {
                 listaComentario.add(comentario)
             }
         }
